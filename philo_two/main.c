@@ -1,23 +1,12 @@
-#include "philo_one.h"
+#include "philo_two.h"
 
 void	free_info(t_info *info)
 {
-	int i;
-
 	if (info->philo != NULL)
 		free(info->philo);
-	if (info->forks != NULL)
-	{
-		i = 0;
-		while (i < info->philos_number)
-		{
-			pthread_mutex_destroy(&(info->forks[i]));
-			i++;
-		}
-		free(info->forks);
-	}
-	pthread_mutex_destroy(&(info->output));
-	pthread_mutex_destroy(&(info->main_exit));
+	sem_unlink(FORK_SEM);
+	sem_unlink(MAIN_SEM);
+	sem_unlink(OUTPUT_SEM);
 }
 
 int		ft_error(char *error, t_info *info, int error_code)
@@ -27,8 +16,8 @@ int		ft_error(char *error, t_info *info, int error_code)
 		ft_putstr("invalid arguments\n");
 	else if (error_code == MALLOC_ERROR)
 		ft_putstr("malloc error");
-	else if (error_code == MUTEX_ERROR)
-		ft_putstr("mutex error");
+	else if (error_code == SEM_ERROR)
+		ft_putstr("semaphor error");
 	else if (error_code == THREAD_ERROR)
 		ft_putstr("thread error");
 	free_info(info);
@@ -41,7 +30,9 @@ int		main(int argc, char **argv)
 	int		ret_value;
 
 	info.philo = NULL;
-	info.forks = NULL;
+	sem_unlink(FORK_SEM);
+	sem_unlink(MAIN_SEM);
+	sem_unlink(OUTPUT_SEM);
 	if (argc < 5 || argc > 6)
 	{
 		ft_putstr("wrong number of arguments\n");
@@ -53,7 +44,7 @@ int		main(int argc, char **argv)
 	ret_value = create_threads(&info);
 	if (ret_value != 0)
 		return (ft_error("Error: ", &info, ret_value));
-	pthread_mutex_lock(&(info.main_exit));
+	sem_wait(info.main_sem);
 	free_info(&info);
 	return (0);
 }
