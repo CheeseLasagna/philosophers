@@ -1,9 +1,19 @@
-#include "philo_two.h"
+#include "philo_three.h"
 
 void	free_info(t_info *info)
 {
+	int i;
+
+	i = 0;
 	if (info->philo != NULL)
+	{
+		while (i < info->philos_number)
+		{
+			kill(info->philo[i].pid, SIGKILL);
+			i++;
+		}
 		free(info->philo);
+	}
 	sem_unlink(FORK_SEM);
 	sem_unlink(MAIN_SEM);
 	sem_unlink(OUTPUT_SEM);
@@ -43,7 +53,7 @@ int		main(int argc, char **argv)
 	ret_value = fill_info(&info, argc, argv);
 	if (ret_value != 0)
 		return (ft_error("Error: ", &info, ret_value));
-	ret_value = create_threads(&info);
+	ret_value = create_procs_and_threads(&info);
 	if (ret_value != 0)
 		return (ft_error("Error: ", &info, ret_value));
 	sem_wait(info.main_sem);

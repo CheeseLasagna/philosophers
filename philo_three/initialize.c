@@ -1,4 +1,4 @@
-#include "philo_two.h"
+#include "philo_three.h"
 
 int		fill_general_info(t_info *info, int argc, char **argv)
 {

@@ -1,4 +1,4 @@
-#include "philo_two.h"
+#include "philo_three.h"
 
 void	philo_take_forks(t_philo *philo)
 {

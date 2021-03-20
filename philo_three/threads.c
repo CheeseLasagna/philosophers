@@ -1,4 +1,4 @@
-#include "philo_two.h"
+#include "philo_three.h"
 
 void	*all_philos_finished(void *arg)
 {
@@ -38,17 +38,15 @@ void	*monitor_health(void *arg)
 	return (NULL);
 }
 
-void	*philo_main(void *arg)
+int		philo_main(t_philo *philo)
 {
-	t_philo		*philo;
 	pthread_t	thread;
 
-	philo = (t_philo*)arg;
 	philo->next_death_time = get_time() + philo->general_info->time_to_die;
 	if (pthread_create(&thread, NULL, &monitor_health, philo) != 0)
-		return (NULL);
+		return (1);
 	if (pthread_detach(thread) != 0)
-		return (NULL);
+		return (1);
 	while (1)
 	{
 		philo_take_forks(philo);
@@ -57,12 +55,13 @@ void	*philo_main(void *arg)
 		philo->action_time = get_time();
 		philo_status_print(philo, THINKING);
 	}
-	return (NULL);
+	return (0);
 }
 
 int		create_philos_threads(t_info *info)
 {
 	int			i;
+	int			exit_status;
 	pthread_t	thread;
 
 	if (info->meals_to_eat != -1)
@@ -75,17 +74,19 @@ int		create_philos_threads(t_info *info)
 	i = 0;
 	while (i < info->philos_number)
 	{
-		if (pthread_create(&thread, NULL, &philo_main, &(info->philo[i])) != 0)
-			return (THREAD_ERROR);
-		if (pthread_detach(thread) != 0)
-			return (THREAD_ERROR);
+		info->philo[i].pid = fork();
+		if (info->philo[i].pid == 0)
+		{
+			exit_status = philo_main(&(info->philo[i]));
+			exit(exit_status);
+		}
 		usleep(500);
 		i++;
 	}
 	return (0);
 }
 
-int		create_threads(t_info *info)
+int		create_procs_and_threads(t_info *info)
 {
 	info->start_time = get_time();
 	if (create_philos_threads(info) != 0)

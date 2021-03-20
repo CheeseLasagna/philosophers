@@ -1,5 +1,5 @@
-#ifndef PHILO_TWO_H
-# define PHILO_TWO_H
+#ifndef PHILO_THREE_H
+# define PHILO_THREE_H
 # include <unistd.h>
 # include <stdlib.h>
 # include <pthread.h>
@@ -7,6 +7,8 @@
 # include <fcntl.h>
 # include <sys/stat.h>
 # include <semaphore.h>
+# include <sys/types.h>
+# include <signal.h>
 # define FORK_SEM "forks"
 # define MAIN_SEM "main"
 # define OUTPUT_SEM "output"
@@ -19,6 +21,7 @@ typedef struct	s_philo
 {
 	int				name;
 	int				finished_meals;
+	pid_t			pid;
 	long int		action_time;
 	long int		death_time;
 	long int		next_death_time;
@@ -75,7 +78,7 @@ long int		get_time(void);
 **INITIALIZE
 */
 int				fill_info(t_info *info, int argc, char **argv);
-int				create_threads(t_info *info);
+int				create_procs_and_threads(t_info *info);
 
 /*
 **ACTION
