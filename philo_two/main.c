@@ -7,7 +7,8 @@ void	free_info(t_info *info)
 	sem_unlink(FORK_SEM);
 	sem_unlink(MAIN_SEM);
 	sem_unlink(OUTPUT_SEM);
-	sem_unlink(FINISHED_MEALS);
+	sem_unlink(HUNGRY_PHILOS);
+	sem_unlink(EAT_PERM);
 }
 
 int		ft_error(char *error, t_info *info, int error_code)
@@ -34,10 +35,11 @@ int		main(int argc, char **argv)
 	sem_unlink(FORK_SEM);
 	sem_unlink(MAIN_SEM);
 	sem_unlink(OUTPUT_SEM);
-	sem_unlink(FINISHED_MEALS);
+	sem_unlink(HUNGRY_PHILOS);
+	sem_unlink(EAT_PERM);
 	if (argc < 5 || argc > 6)
 	{
-		ft_putstr("wrong number of arguments\n");
+		printf("wrong number of arguments\n");
 		return (0);
 	}
 	ret_value = fill_info(&info, argc, argv);
@@ -47,6 +49,5 @@ int		main(int argc, char **argv)
 	if (ret_value != 0)
 		return (ft_error("Error: ", &info, ret_value));
 	sem_wait(info.main_sem);
-	free_info(&info);
 	return (0);
 }
